@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI提示词拼接工具（模块化多选版）</title>
+    <style>
+        /* --- 基础样式 --- */
+        :root {
+            --primary-color: #007bff;
+            --primary-hover: #0056b3;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --light-gray: #f8f9fa;
+            --dark-gray: #343a40;
+            --border-color: #ced4da;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: #e9ecef;
+            color: var(--dark-gray);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2rem 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 900px; /* 稍微加宽以适应标签 */
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--dark-gray);
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- 控件样式 --- */
+        .control-group {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--light-gray);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: white;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+            margin-right: 1rem;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #copyBtn {
+            background-color: var(--success-color);
+        }
+        #copyBtn:hover {
+            background-color: #218838;
+        }
+
+        /* --- 选择器区域样式 --- */
+        #selectorsArea {
+            display: none; /* 初始隐藏 */
+            margin-top: 1.5rem;
+        }
+        .tag-group {
+            margin-bottom: 1.5rem;
+            border: 1px solid #e0e0e0;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+        .tag-group h3 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+        .tag-group p {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            padding: 8px 16px;
+            background-color: #e9ecef;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            user-select: none; /* 防止文字被选中 */
+        }
+
+        .tag:hover {
+            background-color: #d4d4d4;
+            border-color: #adb5bd;
+            transform: scale(1.05);
+        }
+
+        .tag.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .tag.selected:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        /* --- 结果区域样式 --- */
+        #resultArea {
+            display: none; /* 初始隐藏 */
+        }
+        
+        #resultPrompt {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            resize: vertical;
+            font-family: monospace; /* 使用等宽字体更清晰 */
+        }
+
+        /* --- 状态和错误信息样式 --- */
+        #statusMessage, #errorMessage {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 4px;
+            text-align: center;
+        }
+        #statusMessage {
+            color: var(--dark-gray);
+            font-style: italic;
+        }
+        #errorMessage {
+            color: white;
+            background-color: var(--danger-color);
+            display: none; /* 初始隐藏 */
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        <h1>🎨 AI提示词拼接工具（模块化多选版）</h1>
+
+        <section class="control-group">
+            <label for="jsonFileInput">1. 选择JSON文件</label>
+            <input type="file" id="jsonFileInput" accept=".json">
+            <p id="statusMessage">请选择一个包含提示词模块的JSON文件。</p>
+            <p id="errorMessage"></p>
+        </section>
+
+        <section id="selectorsArea">
+            <h3>2. 选择各模块提示词（可多选）</h3>
+            <div id="selectorsContainer">
+                <!-- 动态生成的标签组将放在这里 -->
+            </div>
+            <button id="generateBtn">3. 拼接提示词</button>
+            <button id="copyBtn" style="display: none;">4. 复制到剪贴板</button>
+        </section>
+
+        <section id="resultArea">
+            <label for="resultPrompt">生成的提示词：</label>
+            <textarea id="resultPrompt" readonly></textarea>
+        </section>
+    </main>
+
+    <script>
+        // --- DOM 元素引用 ---
+        const fileInput = document.getElementById('jsonFileInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const selectorsArea = document.getElementById('selectorsArea');
+        const selectorsContainer = document.getElementById('selectorsContainer');
+        const resultArea = document.getElementById('resultArea');
+        const resultPrompt = document.getElementById('resultPrompt');
+        const statusMessage = document.getElementById('statusMessage');
+        const errorMessage = document.getElementById('errorMessage');
+
+        let loadedJsonData = null; // 用于存储加载的JSON数据
+
+        // --- 事件监听器 ---
+
+        // 1. 文件选择事件
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                statusMessage.textContent = `已选择文件: ${file.name}`;
+                errorMessage.style.display = 'none';
+                readJsonFile(file);
+            } else {
+                resetState();
+            }
+        });
+
+        // 2. 生成按钮点击事件
+        generateBtn.addEventListener('click', () => {
+            const promptString = buildPromptFromTags();
+            resultPrompt.value = promptString;
+            resultArea.style.display = 'block';
+            copyBtn.style.display = 'inline-block';
+            statusMessage.textContent = "提示词已生成！";
+        });
+
+        // 3. 复制按钮点击事件
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(resultPrompt.value).then(() => {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✅ 已复制!';
+                copyBtn.disabled = true;
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.disabled = false;
+                }, 2000);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                errorMessage.textContent = '复制失败，请手动复制。';
+                errorMessage.style.display = 'block';
+            });
+        });
+
+        // --- 核心函数 ---
+
+        /**
+         * 读取并解析JSON文件
+         * @param {File} file - 用户选择的文件对象
+         */
+        function readJsonFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const content = e.target.result;
+                    loadedJsonData = JSON.parse(content);
+                    if (validateJsonData(loadedJsonData)) {
+                        renderTagGroups(loadedJsonData);
+                        selectorsArea.style.display = 'block';
+                        statusMessage.textContent = `文件 "${file.name}" 加载成功，请选择各模块提示词。`;
+                    } else {
+                        throw new Error("JSON格式不符合要求。");
+                    }
+                } catch (error) {
+                    console.error("JSON解析或验证失败:", error);
+                    errorMessage.textContent = `错误：文件 "${file.name}" 不是有效的JSON格式，或格式不符合要求。`;
+                    errorMessage.style.display = 'block';
+                    resetState();
+                }
+            };
+            reader.onerror = (e) => {
+                console.error("文件读取失败:", e);
+                errorMessage.textContent = '错误：文件读取失败。';
+                errorMessage.style.display = 'block';
+                resetState();
+            };
+            reader.readAsText(file);
+        }
+
+        /**
+         * 验证JSON数据是否符合预期的模块化结构
+         * @param {any} data - 解析后的JSON数据
+         * @returns {boolean}
+         */
+        function validateJsonData(data) {
+            if (!Array.isArray(data)) return false;
+            return data.every(item => 
+                item && 
+                typeof item === 'object' && 
+                typeof item.module === 'string' && 
+                Array.isArray(item.options) && 
+                item.options.length > 0
+            );
+        }
+
+        /**
+         * 根据JSON数据动态渲染标签组
+         * @param {Array} data - 符合格式的JSON数组
+         */
+        function renderTagGroups(data) {
+            selectorsContainer.innerHTML = ''; // 清空之前的内容
+            data.forEach((moduleData, index) => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'tag-group';
+
+                const title = document.createElement('h3');
+                title.textContent = moduleData.module;
+
+                const description = document.createElement('p');
+                description.textContent = moduleData.description || '请选择相关标签。';
+
+                const tagContainer = document.createElement('div');
+                tagContainer.className = 'tag-container';
+                tagContainer.dataset.moduleIndex = index; // 用于后续查找
+
+                moduleData.options.forEach(optionText => {
+                    const tag = document.createElement('button');
+                    tag.className = 'tag';
+                    tag.textContent = optionText;
+                    tag.dataset.value = optionText;
+                    
+                    // 添加点击事件监听器
+                    tag.addEventListener('click', () => {
+                        tag.classList.toggle('selected');
+                    });
+
+                    tagContainer.appendChild(tag);
+                });
+
+                groupDiv.appendChild(title);
+                groupDiv.appendChild(description);
+                groupDiv.appendChild(tagContainer);
+                selectorsContainer.appendChild(groupDiv);
+            });
+        }
+
+        /**
+         * 从所有选中的标签中获取值，并拼接成提示词
+         * @returns {string}
+         */
+        function buildPromptFromTags() {
+            const allTagGroups = selectorsContainer.querySelectorAll('.tag-group');
+            const promptParts = [];
+
+            allTagGroups.forEach(group => {
+                const moduleName = group.querySelector('h3').textContent;
+                const selectedTags = group.querySelectorAll('.tag.selected');
+                
+                if (selectedTags.length > 0) {
+                    const selectedValues = Array.from(selectedTags).map(tag => tag.dataset.value);
+                    // 格式: [模块名]: 选项1, 选项2
+                    promptParts.push(`[${moduleName}]: ${selectedValues.join(', ')}`);
+                }
+            });
+
+            return promptParts.join('; ');
+        }
+
+        /**
+         * 重置UI状态
+         */
+        function resetState() {
+            loadedJsonData = null;
+            selectorsArea.style.display = 'none';
+            resultArea.style.display = 'none';
+            copyBtn.style.display = 'none';
+            statusMessage.textContent = '请选择一个包含提示词模块的JSON文件。';
+            errorMessage.style.display = 'none';
+            fileInput.value = ''; // 清空文件选择
+        }
+    </script>
+</body>
+</html>
