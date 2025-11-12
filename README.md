@@ -1,6 +1,10 @@
 # 🎨 AI提示词拼接工具（模块化多选版）
 
 一个轻量级的Web工具，帮助用户通过模块化选择的方式快速拼接AI提示词，支持多选组合和实时预览。
+<img width="1496" height="1223" alt="image" src="https://github.com/user-attachments/assets/41fd247b-72d6-4f6e-9a94-a6422bfd01fb" />
+<img width="1494" height="1151" alt="image" src="https://github.com/user-attachments/assets/5e3556e8-35cd-49c2-8a8b-9ab1218fcb90" />
+
+
 
 ## ✨ 功能特点
 
@@ -15,12 +19,16 @@
 
 1. **下载项目**
 
-bash
-git clone https://github.com/yourusername/prompt-generator.git
-cd prompt-generator
+'''bash
+
+git clone https://github.com/starttown/AI_prompt-generator.git
+
+cd AI_prompt-generator
+
+'''
 
 2. **打开工具**
-   直接在浏览器中打开 `promot-generation.html`
+   直接在浏览器中打开 `[promot-generation.html](https://starttown.github.io/AI_prompt-generator/)`
 
 3. **准备JSON文件**
    创建符合格式的JSON文件（参考 [test.json](test.json)）
@@ -65,8 +73,8 @@ json
 
 ## 📁 项目结构
 
-prompt-generator/
-├── promot-generation.html # 主程序文件
+AI_prompt-generator/
+├── index.html # 主程序文件
 ├── test.json # 示例JSON文件
 └── README.md # 项目说明
 
@@ -98,26 +106,24 @@ prompt-generator/
 感谢所有为这个项目做出贡献的开发者！
 
 项目使用说明
+
 文件上传：
+
 点击"选择JSON文件"按钮
 选择符合格式的JSON文件（如提供的test.json）
+
 标签选择：
+
 每个模块显示为独立的卡片
 点击标签进行多选/取消选择
 选中的标签会高亮显示
+
 生成提示词：
+
 选择完所需标签后点击"拼接提示词"
 生成的提示词格式：[模块名]: 选项1, 选项2; [模块名]: 选项3
+
 复制结果：
+
 点击"复制到剪贴板"按钮
 成功复制后按钮会显示"✅ 已复制!"状态
-测试建议
-使用提供的test.json测试基本功能
-尝试以下测试场景：
-单模块多选
-跨模块选择
-不选择任何标签直接生成
-上传无效JSON文件
-上传不符合格式的JSON
-测试响应式布局（调整浏览器窗口大小）
-这个项目结构清晰，功能完整，适合开源发布。README提供了详细的使用说明，test.json包含了丰富的测试用例，涵盖了艺术创作的多个维度，适合AI绘画提示词生成场景。
