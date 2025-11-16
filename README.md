@@ -1,6 +1,6 @@
 # 🎨 AI提示词拼接工具（模块化多选版）
 
-一个轻量级的Web工具，帮助用户通过模块化选择的方式快速拼接AI提示词，支持多选组合和实时预览。
+一个通过模块化组合的方式快速拼接生成AI提示词的轻量级Web工具。
 <img width="1496" height="1223" alt="image" src="https://github.com/user-attachments/assets/41fd247b-72d6-4f6e-9a94-a6422bfd01fb" />
 <img width="1494" height="1151" alt="image" src="https://github.com/user-attachments/assets/5e3556e8-35cd-49c2-8a8b-9ab1218fcb90" />
 
