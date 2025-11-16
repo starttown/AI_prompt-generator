@@ -4,8 +4,6 @@
 <img width="1496" height="1223" alt="image" src="https://github.com/user-attachments/assets/41fd247b-72d6-4f6e-9a94-a6422bfd01fb" />
 <img width="1494" height="1151" alt="image" src="https://github.com/user-attachments/assets/5e3556e8-35cd-49c2-8a8b-9ab1218fcb90" />
 
-
-
 ## ✨ 功能特点
 
 - 📁 **JSON文件驱动**：通过上传JSON文件自定义提示词模块
@@ -15,7 +13,7 @@
 - 📱 **响应式设计**：适配桌面和移动设备
 - 🎯 **实时预览**：即时查看拼接结果
 
-## 🚀 快速开始
+## [🚀 快速开始](https://starttown.github.io/AI_prompt-generator/)
 
 1. **下载项目**
 
@@ -27,13 +25,11 @@ cd AI_prompt-generator
 
 '''
 
-2. **打开工具**
-   直接在浏览器中打开 `[promot-generation.html](https://starttown.github.io/AI_prompt-generator/)`
-
-3. **准备JSON文件**
+2. **准备JSON文件**
    创建符合格式的JSON文件（参考 [test.json](test.json)）
 
-4. **使用步骤**
+3. **使用步骤**
+   
    - 点击"选择JSON文件"上传配置文件
    - 在各模块中选择需要的标签（可多选）
    - 点击"拼接提示词"生成结果
@@ -41,8 +37,8 @@ cd AI_prompt-generator
 
 ## 📄 JSON文件格式
 
-json
-[
+
+`[
 {
 “module”: “模块名称”,
 “description”: “模块描述（可选）”,
@@ -59,11 +55,10 @@ json
 “选项B”
 ]
 }
-]
-
-
+]`
 
 ### 格式要求：
+
 - 必须是有效的JSON数组
 - 每个模块必须包含：
   - `module`：字符串（模块名称）
@@ -77,7 +72,6 @@ AI_prompt-generator/
 ├── index.html # 主程序文件
 ├── test.json # 示例JSON文件
 └── README.md # 项目说明
-
 
 ## 🛠️ 技术栈
 
@@ -104,6 +98,8 @@ AI_prompt-generator/
 ## 🌟 致谢
 
 感谢所有为这个项目做出贡献的开发者！
+
+
 
 项目使用说明
 
