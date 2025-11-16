@@ -69,9 +69,14 @@ cd AI_prompt-generator
 ## 📁 项目结构
 
 AI_prompt-generator/
+
 ├── index.html # 主程序文件
+
 ├── test.json # 示例JSON文件
+
 └── README.md # 项目说明
+
+
 
 ## 🛠️ 技术栈
 
